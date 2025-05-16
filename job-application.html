@@ -1,0 +1,554 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pata Kazi | Job Application - Apply for Jobs in Kenya</title>
+    <meta name="description" content="Apply for jobs in Kenya with Pata Kazi. Submit your detailed application with a KSh 1,000 M-Pesa payment to Till Number 4178866.">
+    <meta name="keywords" content="job application Kenya, apply for jobs Kenya, M-Pesa job application, Pata Kazi application">
+    <meta name="robots" content="index, follow">
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#006600',secondary:'#bc0000'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        body { font-family: 'Open Sans', sans-serif; color: #333; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Ubuntu', sans-serif; }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background-color: #006600; transition: width 0.3s; }
+        .nav-link:hover::after { width: 100%; }
+        .active-nav::after { width: 100%; }
+        .custom-checkbox { appearance: none; width: 18px; height: 18px; border: 2px solid #006600; border-radius: 4px; position: relative; cursor: pointer; }
+        .custom-checkbox:checked { background-color: #006600; }
+        .custom-checkbox:checked::after { content: ''; position: absolute; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); top: 1px; left: 5px; }
+        .form-section { transition: all 0.3s ease; }
+        .error-message { color: #bc0000; font-size: 0.875rem; display: none; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm fixed w-full z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-['Pacifico'] text-primary flex items-center gap-2">
+                <div class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full">
+                    <i class="ri-briefcase-line ri-lg"></i>
+                </div>
+                Pata Kazi
+            </a>
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="nav-link font-medium">Home</a>
+                <a href="job-seekers.html" class="nav-link font-medium">Job Seekers</a>
+                <a href="employers.html" class="nav-link font-medium">Employers</a>
+                <a href="pricing.html" class="nav-link font-medium">Pricing</a>
+                <a href="partners.html" class="nav-link font-medium">Partners</a>
+                <a href="success-stories.html" class="nav-link font-medium">Success Stories</a>
+                <a href="about.html" class="nav-link font-medium">About</a>
+                <a href="contact.html" class="nav-link font-medium">Contact</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="hidden md:block text-gray-700 hover:text-primary transition">
+                    <div class="w-8 h-8 flex items-center justify-center">
+                        <i class="ri-search-line ri-lg"></i>
+                    </div>
+                </a>
+                <a href="login-signup.html" class="hidden md:block px-4 py-2 border border-gray-300 rounded-button font-medium hover:bg-gray-100 transition">Log In</a>
+                <a href="login-signup.html" class="px-4 py-2 bg-secondary text-white rounded-button font-medium hover:bg-opacity-90 transition">Sign Up</a>
+                <button class="md:hidden w-8 h-8 flex items-center justify-center">
+                    <i class="ri-menu-line ri-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-16">
+        <section class="bg-primary bg-opacity-10 min-h-[400px] flex items-center">
+            <div class="container mx-auto px-4 py-16">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Launch Your Career Today – Apply with Confidence!</h1>
+                <p class="text-lg text-gray-700 mb-4 max-w-3xl">At Pata Kazi, we’re proud to share that 98% of our applicants successfully secure jobs with top employers across Kenya. By leveraging our comprehensive application process, personalized job matching, and dedicated support, we ensure your skills and aspirations connect with the right opportunities. Join thousands of satisfied job seekers who’ve transformed their careers with Pata Kazi—apply today and be part of our success story!</p>
+                <div class="bg-white rounded-lg p-4 max-w-2xl shadow-md">
+                    <div class="flex items-center">
+                        <i class="ri-checkbox-circle-line ri-xl text-primary mr-2"></i>
+                        <p class="text-gray-700 font-medium"><strong>Pata Kazi Guarantee:</strong> Your application is processed with care and priority, connecting you to top employers in Kenya. We ensure every submission is reviewed, or your fee is refunded if not processed within 7 days.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl mx-auto bg-gray-50 rounded-lg shadow-md p-8">
+                    <h2 class="text-2xl font-bold mb-6">Job Application Form</h2>
+                    <form id="job-application-form" class="space-y-6" enctype="multipart/form-data">
+                        <!-- Personal Information -->
+                        <div class="form-section">
+                            <h3 class="text-xl font-bold mb-4">Personal Information</h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-secondary">*</span></label>
+                                    <input type="text" name="full_name" placeholder="Enter your full name" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                    <p class="error-message" id="full_name_error">Full name is required.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-secondary">*</span></label>
+                                    <input type="email" name="email" placeholder="Enter your email" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                    <p class="error-message" id="email_error">Valid email is required.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number <span class="text-secondary">*</span></label>
+                                    <input type="tel" name="phone" placeholder="+254 7XX XXX XXX" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                    <p class="error-message" id="phone_error">Valid phone number is required.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">National ID Number</label>
+                                    <input type="text" name="national_id" placeholder="Enter your ID number" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                                    <select name="gender" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                                        <option value="">Select gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Location (City/Town) <span class="text-secondary">*</span></label>
+                                    <input type="text" name="location" placeholder="e.g., Nairobi" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                    <p class="error-message" id="location_error">Location is required.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Education -->
+                        <div class="form-section">
+                            <h3 class="text-xl font-bold mb-4">Education</h3>
+                            <div id="education-entries" class="space-y-4">
+                                <div class="education-entry grid md:grid-cols-2 gap-4 border-b pb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Institution Name <span class="text-secondary">*</span></label>
+                                        <input type="text" name="institution[]" placeholder="e.g., University of Nairobi" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                        <p class="error-message" id="institution_error_0">Institution name is required.</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Qualification <span class="text-secondary">*</span></label>
+                                        <input type="text" name="qualification[]" placeholder="e.g., Bachelor of Science" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                        <p class="error-message" id="qualification_error_0">Qualification is required.</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Year <span class="text-secondary">*</span></label>
+                                        <input type="number" name="edu_start_year[]" placeholder="e.g., 2018" min="1900" max="2025" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                        <p class="error-message" id="edu_start_year_error_0">Start year is required.</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">End Year <span class="text-secondary">*</span></label>
+                                        <input type="number" name="edu_end_year[]" placeholder="e.g., 2022" min="1900" max="2025" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                        <p class="error-message" id="edu_end_year_error_0">End year is required.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="add-education" class="mt-4 px-4 py-2 font-medium hover:bg-opacity-90 rounded-button bg-primary text-white transition">Add Another Education</button>
+                        </div>
+
+                        <!-- Work Experience -->
+                        <div class="form-section">
+                            <h3 class="text-xl font-bold mb-4">Work Experience</h3>
+                            <div id="experience-entries" class="space-y-4">
+                                <div class="experience-entry grid md:grid-cols-2 gap-4 border-b pb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                                        <input type="text" name="company[]" placeholder="e.g., Safaricom" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                                        <input type="text" name="job_title[]" placeholder="e.g., Software Engineer" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                        <input type="date" name="exp_start_date[]" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">End Date (or 'Present')</label>
+                                        <input type="text" name="exp_end_date[]" placeholder="e.g., Present or 2023-06" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Responsibilities</label>
+                                        <textarea name="responsibilities[]" placeholder="Describe your key responsibilities" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" rows="4"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="add-experience" class="mt-4 px-4 py-2 font-medium hover:bg-opacity-90 rounded-button bg-primary text-white transition">Add Another Experience</button>
+                        </div>
+
+                        <!-- Skills -->
+                        <div class="form-section">
+                            <h3 class="text-xl font-bold mb-4">Skills</h3>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Key Skills <span class="text-secondary">*</span></label>
+                                <textarea name="skills" placeholder="e.g., Python, Project Management, Customer Service" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" rows="4" required></textarea>
+                                <p class="error-message" id="skills_error">Skills are required.</p>
+                            </div>
+                        </div>
+
+                        <!-- Resume Upload -->
+                        <div class="form-section">
+                            <h3 class="text-xl font-bold mb-4">Resume Upload</h3>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Resume (PDF only, max 5MB) <span class="text-secondary">*</span></label>
+                                <input type="file" name="resume" accept=".pdf" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                <p class="error-message" id="resume_error">A valid PDF resume is required.</p>
+                            </div>
+                        </div>
+
+                        <!-- Job Details -->
+                        <div class="form-section">
+                            <h3 class="text-xl font-bold mb-4">Job Details</h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Job Title <span class="text-secondary">*</span></label>
+                                    <input type="text" name="job_title_apply" placeholder="e.g., Software Developer" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                    <p class="error-message" id="job_title_apply_error">Job title is required.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Job Reference Number (if applicable)</label>
+                                    <input type="text" name="job_reference" placeholder="e.g., SAF2023-001" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Information -->
+                        <div class="form-section">
+                            <h3 class="text-xl font-bold mb-4">Payment Information</h3>
+                            <div class="bg-primary bg-opacity-10 p-6 rounded-lg mb-4">
+                                <p class="text-gray-700 mb-2">A non-refundable application fee of <strong>KSh 1,000</strong> is required to process your application.</p>
+                                <p class="text-gray-700 mb-2">Please make the payment via M-Pesa to:</p>
+                                <p class="text-gray-700 font-bold">Till Number: 4178866</p>
+                                <p class="text-gray-700 mt-2">Enter the M-Pesa transaction code below after making the payment.</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">M-Pesa Transaction Code <span class="text-secondary">*</span></label>
+                                <input type="text" name="transaction_code" placeholder="e.g., QJ1234567890" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                                <p class="error-message" id="transaction_code_error">Valid transaction code is required.</p>
+                            </div>
+                            <div class="flex items-center mt-4">
+                                <i class="ri-shield-check-line ri-lg text-primary mr-2"></i>
+                                <p class="text-sm text-gray-600">Secure payment processing via M-Pesa</p>
+                            </div>
+                        </div>
+
+                        <!-- Consent -->
+                        <div class="form-section">
+                            <div class="flex items-center">
+                                <input type="checkbox" name="consent" class="custom-checkbox mr-2" required>
+                                <label class="text-sm text-gray-600">I agree to the <a href="#" class="text-primary hover:underline">Terms of Service</a> and <a href="#" class="text-primary hover:underline">Privacy Policy</a>, and confirm that all information provided is accurate. <span class="text-secondary">*</span></label>
+                            </div>
+                            <p class="error-message" id="consent_error">You must agree to the terms.</p>
+                        </div>
+
+                        <button type="submit" class="w-full px-6 py-3 bg-secondary text-white rounded-button font-medium hover:bg-opacity-90 transition">Submit Application</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <a href="index.html" class="text-2xl font-['Pacifico'] text-white flex items-center gap-2 mb-6">
+                        <div class="w-10 h-10 flex items-center justify-center bg-white text-primary rounded-full">
+                            <i class="ri-briefcase-line ri-lg"></i>
+                        </div>
+                        Pata Kazi
+                    </a>
+                    <p class="text-gray-400 mb-6">Connecting job seekers and employers across Kenya with the best opportunities and talent.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-primary rounded-full transition">
+                            <i class="ri-facebook-fill"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-primary rounded-full transition">
+                            <i class="ri-twitter-x-fill"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-primary rounded-full transition">
+                            <i class="ri-linkedin-fill"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-primary rounded-full transition">
+                            <i class="ri-instagram-fill"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index.html" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="job-seekers.html" class="text-gray-400 hover:text-white transition">Find Jobs</a></li>
+                        <li><a href="employers.html" class="text-gray-400 hover:text-white transition">Post Jobs</a></li>
+                        <li><a href="pricing.html" class="text-gray-400 hover:text-white transition">Premium Services</a></li>
+                        <li><a href="success-stories.html" class="text-gray-400 hover:text-white transition">Success Stories</a></li>
+                        <li><a href="about.html" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-6">For Job Seekers</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Browse Jobs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Resume Review</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Career Advice</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Job Alerts</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Interview Tips</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Online Jobs</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-6">Contact Us</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <div class="w-5 h-5 flex items-center justify-center text-primary mt-1">
+                                <i class="ri-map-pin-line"></i>
+                            </div>
+                            <span class="ml-2 text-gray-400">Kimathi Street, Nairobi, Kenya</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-5 h-5 flex items-center justify-center text-primary mt-1">
+                                <i class="ri-mail-line"></i>
+                            </div>
+                            <span class="ml-2 text-gray-400">info@patakazi.co.ke</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-5 h-5 flex items-center justify-center text-primary mt-1">
+                                <i class="ri-phone-line"></i>
+                            </div>
+                            <span class="ml-2 text-gray-400">+254 712 345 678</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-5 h-5 flex items-center justify-center text-primary mt-1">
+                                <i class="ri-time-line"></i>
+                            </div>
+                            <span class="ml-2 text-gray-400">Mon-Fri: 8:00 AM - 6:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2025 Pata Kazi. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 text-sm hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 text-sm hover:text-white transition">Terms of Service</a>
+                    <a href="#" class="text-gray-400 text-sm hover:text-white transition">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.querySelector('.md\\:hidden');
+            const mobileMenu = document.querySelector('.md\\:flex.items-center.space-x-8');
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    if (mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.remove('hidden');
+                        mobileMenu.classList.add('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4', 'space-x-0', 'z-50');
+                    } else {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenu.classList.remove('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'space-y-4', 'space-x-0', 'z-50');
+                    }
+                });
+            }
+
+            // Add Education Entry
+            const addEducationBtn = document.getElementById('add-education');
+            const educationEntries = document.getElementById('education-entries');
+            let educationCount = 0;
+
+            addEducationBtn.addEventListener('click', function() {
+                educationCount++;
+                const entry = document.createElement('div');
+                entry.classList.add('education-entry', 'grid', 'md:grid-cols-2', 'gap-4', 'border-b', 'pb-4');
+                entry.innerHTML = `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Institution Name <span class="text-secondary">*</span></label>
+                        <input type="text" name="institution[]" placeholder="e.g., University of Nairobi" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                        <p class="error-message" id="institution_error_${educationCount}">Institution name is required.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Qualification <span class="text-secondary">*</span></label>
+                        <input type="text" name="qualification[]" placeholder="e.g., Bachelor of Science" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                        <p class="error-message" id="qualification_error_${educationCount}">Qualification is required.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Year <span class="text-secondary">*</span></label>
+                        <input type="number" name="edu_start_year[]" placeholder="e.g., 2018" min="1900" max="2025" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                        <p class="error-message" id="edu_start_year_error_${educationCount}">Start year is required.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">End Year <span class="text-secondary">*</span></label>
+                        <input type="number" name="edu_end_year[]" placeholder="e.g., 2022" min="1900" max="2025" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" required>
+                        <p class="error-message" id="edu_end_year_error_${educationCount}">End year is required.</p>
+                    </div>
+                    <button type="button" class="remove-education text-secondary hover:underline">Remove</button>
+                `;
+                educationEntries.appendChild(entry);
+            });
+
+            // Remove Education Entry
+            educationEntries.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-education')) {
+                    e.target.parentElement.remove();
+                }
+            });
+
+            // Add Experience Entry
+            const addExperienceBtn = document.getElementById('add-experience');
+            const experienceEntries = document.getElementById('experience-entries');
+            let experienceCount = 0;
+
+            addExperienceBtn.addEventListener('click', function() {
+                experienceCount++;
+                const entry = document.createElement('div');
+                entry.classList.add('experience-entry', 'grid', 'md:grid-cols-2', 'gap-4', 'border-b', 'pb-4');
+                entry.innerHTML = `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                        <input type="text" name="company[]" placeholder="e.g., Safaricom" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                        <input type="text" name="job_title[]" placeholder="e.g., Software Engineer" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                        <input type="date" name="exp_start_date[]" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">End Date (or 'Present')</label>
+                        <input type="text" name="exp_end_date[]" placeholder="e.g., Present or 2023-06" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Responsibilities</label>
+                        <textarea name="responsibilities[]" placeholder="Describe your key responsibilities" class="w-full px-4 py-2 border-none rounded focus:ring-2 focus:ring-primary focus:outline-none" rows="4"></textarea>
+                    </div>
+                    <button type="button" class="remove-experience text-secondary hover:underline">Remove</button>
+                `;
+                experienceEntries.appendChild(entry);
+            });
+
+            // Remove Experience Entry
+            experienceEntries.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-experience')) {
+                    e.target.parentElement.remove();
+                }
+            });
+
+            // Form Validation
+            const form = document.getElementById('job-application-form');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+
+                // Validate required fields
+                const requiredFields = [
+                    { id: 'full_name', errorId: 'full_name_error', validate: val => val.trim() !== '' },
+                    { id: 'email', errorId: 'email_error', validate: val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) },
+                    { id: 'phone', errorId: 'phone_error', validate: val => /^\+254\s?7\d{8}$/.test(val) },
+                    { id: 'location', errorId: 'location_error', validate: val => val.trim() !== '' },
+                    { id: 'skills', errorId: 'skills_error', validate: val => val.trim() !== '' },
+                    { id: 'job_title_apply', errorId: 'job_title_apply_error', validate: val => val.trim() !== '' },
+                    { id: 'transaction_code', errorId: 'transaction_code_error', validate: val => /^[A-Z0-9]{10}$/.test(val.trim()) },
+                    { id: 'consent', errorId: 'consent_error', validate: () => form.querySelector('input[name="consent"]').checked }
+                ];
+
+                requiredFields.forEach(field => {
+                    const input = form.querySelector(`[name="${field.id}"]`);
+                    const error = document.getElementById(field.errorId);
+                    if (!field.validate(input.value)) {
+                        error.style.display = 'block';
+                        isValid = false;
+                    } else {
+                        error.style.display = 'none';
+                    }
+                });
+
+                // Validate education entries
+                const educationInputs = educationEntries.querySelectorAll('.education-entry');
+                educationInputs.forEach((entry, index) => {
+                    const fields = [
+                        { name: `institution[${index}]`, errorId: `institution_error_${index}`, validate: val => val.trim() !== '' },
+                        { name: `qualification[${index}]`, errorId: `qualification_error_${index}`, validate: val => val.trim() !== '' },
+                        { name: `edu_start_year[${index}]`, errorId: `edu_start_year_error_${index}`, validate: val => val >= 1900 && val <= 2025 },
+                        { name: `edu_end_year[${index}]`, errorId: `edu_end_year_error_${index}`, validate: val => val >= 1900 && val <= 2025 }
+                    ];
+
+                    fields.forEach(field => {
+                        const input = entry.querySelector(`[name="${field.name}"]`);
+                        const error = document.getElementById(field.errorId);
+                        if (!field.validate(input.value)) {
+                            error.style.display = 'block';
+                            isValid = false;
+                        } else {
+                            error.style.display = 'none';
+                        }
+                    });
+                });
+
+                // Validate resume
+                const resumeInput = form.querySelector('input[name="resume"]');
+                const resumeError = document.getElementById('resume_error');
+                if (!resumeInput.files[0] || resumeInput.files[0].type !== 'application/pdf' || resumeInput.files[0].size > 5 * 1024 * 1024) {
+                    resumeError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    resumeError.style.display = 'none';
+                }
+
+                if (isValid) {
+                    alert('Application submitted successfully!');
+                    // form.submit(); // Uncomment to enable actual form submission
+                }
+            });
+        });
+    </script>
+</body>
+</html>
