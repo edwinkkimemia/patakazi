@@ -1,49 +1,10 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pata Kazi | Job Application - Apply for Jobs in Kenya</title>
-    <meta name="description" content="Apply for jobs in Kenya with Pata Kazi. Submit your detailed application with a KSh 1,000 M-Pesa payment to Till Number 4178866.">
+    <meta name="description" content="Apply for jobs in Kenya with Pata Kazi. Join thousands of satisfied job seekers who’ve transformed their careers with Pata Kazi—apply today and be part of our success story!">
     <meta name="keywords" content="job application Kenya, apply for jobs Kenya, M-Pesa job application, Pata Kazi application">
     <meta name="robots" content="index, follow">
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
@@ -53,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Open Sans', sans-serif; color: #333; }
         h1, h2, h3, h4, h5, h6 { font-family: 'Ubuntu', sans-serif; }
@@ -65,6 +27,14 @@
         .custom-checkbox:checked::after { content: ''; position: absolute; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); top: 1px; left: 5px; }
         .form-section { transition: all 0.3s ease; }
         .error-message { color: #bc0000; font-size: 0.875rem; display: none; }
+        .success-modal { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .checkmark { animation: checkmark 0.5s ease-in; }
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -92,7 +62,6 @@
                         <i class="ri-search-line ri-lg"></i>
                     </div>
                 </a>
-                <!-- <a href="login-signup.html" class="hidden md:block px-4 py-2 border border-gray-300 rounded-button font-medium hover:bg-gray-100 transition">Log In</a> -->
                 <a href="job-application.html" class="px-4 py-2 bg-secondary text-white rounded-button font-medium hover:bg-opacity-90 transition">Apply For a Job</a>
                 <button class="md:hidden w-8 h-8 flex items-center justify-center">
                     <i class="ri-menu-line ri-lg"></i>
@@ -290,6 +259,18 @@
                 </div>
             </div>
         </section>
+
+        <!-- Success Modal -->
+        <div id="success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="success-modal bg-white rounded-lg p-8 max-w-md w-full text-center shadow-xl">
+                <div class="flex justify-center mb-4">
+                    <i class="ri-checkbox-circle-fill ri-3x text-primary checkmark"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Application Submitted!</h2>
+                <p class="text-gray-700 mb-6">Congratulations! Your job application has been successfully submitted. Check your email for updates on your job status soon.</p>
+                <a href="index.html" class="px-6 py-3 bg-primary text-white rounded-button font-medium hover:bg-opacity-90 transition">Back to Home</a>
+            </div>
+        </div>
     </main>
 
     <footer class="bg-gray-900 text-white pt-16 pb-8">
@@ -381,7 +362,38 @@
         </div>
     </footer>
 
-    <script>
+    <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+            return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+                try {
+                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                    var firstSheetName = workbook.SheetNames[0];
+                    var worksheet = workbook.Sheets[firstSheetName];
+                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                    var filteredData = jsonData.filter(row => row.some(filledCell));
+                    var headerRowIndex = filteredData.findIndex((row, index) =>
+                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    );
+                    if (headerRowIndex === -1 || headerRowIndex > 25) {
+                        headerRowIndex = 0;
+                    }
+                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                    return csv;
+                } catch (e) {
+                    console.error(e);
+                    return "";
+                }
+            }
+            return gk_fileData[filename] || "";
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile Menu Toggle
             const mobileMenuButton = document.querySelector('.md\\:hidden');
@@ -484,6 +496,7 @@
 
             // Form Validation
             const form = document.getElementById('job-application-form');
+            const successModal = document.getElementById('success-modal');
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 let isValid = true;
@@ -544,8 +557,14 @@
                 }
 
                 if (isValid) {
-                    alert('Application submitted successfully!');
-                    // form.submit(); // Uncomment to enable actual form submission
+                    // Show success modal
+                    successModal.classList.remove('hidden');
+                    // Auto-close modal and redirect after 3 seconds
+                    setTimeout(() => {
+                        successModal.classList.add('hidden');
+                        window.location.href = 'index.html';
+                    }, 3000);
+                    form.submit(); // Uncomment to enable actual form submission
                 }
             });
         });
